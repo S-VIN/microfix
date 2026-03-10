@@ -2,41 +2,23 @@
     "name": "Rust GUI Dev",
 
     "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "RUST_VERSION": "stable",
-            "USERNAME": "dev",
-            "USER_UID": "1000",
-            "USER_GID": "1000"
-        }
+        "dockerfile": "Dockerfile"
     },
 
-    "remoteUser": "dev",
+    "remoteUser": "ubuntu",
 
-    // ── Проброс X11 дисплея с хоста в контейнер ──
     "runArgs": [
         "--net=host",
         "-e", "DISPLAY=${localEnv:DISPLAY}",
         "-e", "WAYLAND_DISPLAY=${localEnv:WAYLAND_DISPLAY}",
         "-e", "XDG_RUNTIME_DIR=/tmp/xdg-runtime",
-        // GPU ускорение (Mesa/Vulkan)
         "--device=/dev/dri"
     ],
 
     "mounts": [
-        // X11 сокет
         "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
-        // Wayland сокет (если используется)
         "source=${localEnv:XDG_RUNTIME_DIR}/${localEnv:WAYLAND_DISPLAY},target=/tmp/xdg-runtime/${localEnv:WAYLAND_DISPLAY},type=bind"
     ],
 
-    "postCreateCommand": "rustc --version && cargo --version",
-
-    "customizations": {
-        "jetbrains": {
-            "plugins": [
-                "org.toml.lang"
-            ]
-        }
-    }
+    "postCreateCommand": "rustc --version && cargo --version"
 }
